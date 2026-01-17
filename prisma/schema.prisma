@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model SiteConfig {
+  id              Int    @id @default(1)
+  heroTitle       String
+  heroDescription String
+  primaryColor    String @default("#2563eb") // Blue-600 default
+  welcomeText     String @default("Bem-vindo à nossa loja")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  imageUrl    String
+  price       String // Visual price (e.g., "R$ 49,90")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
