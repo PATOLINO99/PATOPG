@@ -3,35 +3,40 @@ const prisma = new PrismaClient()
 
 async function main() {
     // Configuração Inicial do Site
-    const config = await prisma.siteConfig.upsert({
+    const settings = await prisma.siteSettings.upsert({
         where: { id: 1 },
         update: {},
         create: {
-            heroTitle: 'Domine a Inteligência Artificial',
-            heroDescription: 'Descubra os melhores prompts e guias para transformar sua produtividade.',
-            primaryColor: '#8b5cf6', // Violet-500
-            welcomeText: 'Biblioteca de Prompts Premium'
+            id: 1,
+            heroTitle: 'Transforme seu WhatsApp em uma Máquina de Vendas 24h',
+            heroSubtitle: 'Centralize seu time, elimine o risco de bloqueios e nunca mais deixe um cliente no vácuo.',
+            primaryColor: '#10b981',
+            accentColor: '#06b6d4',
+            whatsappLink: 'https://wa.me/5500999999999',
+            footerCopyright: '© 2024 ZapScale Tecnologia. Todos os direitos reservados.'
         },
     })
 
-    console.log('Site Config seeded:', config)
+    console.log('Site Settings seeded:', settings)
 
-    // Produtos de Exemplo
+    // Limpar e recriar produtos (opcional)
+    await prisma.product.deleteMany({})
+
     const p1 = await prisma.product.create({
         data: {
-            title: 'Pack de Prompts para Copywriting',
-            description: 'Mais de 100 prompts testados para criar textos que convertem.',
-            imageUrl: 'https://placehold.co/600x400/8b5cf6/ffffff?text=Copywriting+Prompts',
-            price: 'R$ 29,90',
+            title: 'API Oficial WhatsApp',
+            description: 'Conexão estável e segura sem risco de banimento.',
+            imageUrl: 'https://placehold.co/600x400/10b981/ffffff?text=API+Oficial',
+            price: 'R$ 197,00',
         },
     })
 
     const p2 = await prisma.product.create({
         data: {
-            title: 'Guia Definitivo de Midjourney',
-            description: 'Aprenda a gerar imagens hiper-realistas com nosso guia passo a passo.',
-            imageUrl: 'https://placehold.co/600x400/ec4899/ffffff?text=Midjourney+Guide',
-            price: 'R$ 49,90',
+            title: 'IA Treinada',
+            description: 'Atendimento inteligente que aprende com seu negócio.',
+            imageUrl: 'https://placehold.co/600x400/06b6d4/ffffff?text=IA+Treinada',
+            price: 'R$ 397,00',
         },
     })
 

@@ -1,0 +1,22 @@
+
+> patopg@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.0
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Skipping linting
+   Checking validity of types ...
+Failed to compile.
+
+./app/api/config/route.ts:6:37
+Type error: Property 'siteSettings' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+
+[0m [90m 4 |[39m [36mexport[39m [36masync[39m [36mfunction[39m [33mGET[39m() {[0m
+[0m [90m 5 |[39m     [36mtry[39m {[0m
+[0m[31m[1m>[22m[39m[90m 6 |[39m         [36mlet[39m settings [33m=[39m [36mawait[39m prisma[33m.[39msiteSettings[33m.[39mfindFirst({[0m
+[0m [90m   |[39m                                     [31m[1m^[22m[39m[0m
+[0m [90m 7 |[39m             where[33m:[39m { id[33m:[39m [35m1[39m }[33m,[39m[0m
+[0m [90m 8 |[39m             include[33m:[39m { features[33m:[39m [36mtrue[39m[33m,[39m faqs[33m:[39m [36mtrue[39m }[0m
+[0m [90m 9 |[39m         })[33m;[39m[0m

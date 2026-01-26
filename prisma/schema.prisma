@@ -10,12 +10,62 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-model SiteConfig {
+model SiteSettings {
   id              Int    @id @default(1)
-  heroTitle       String
-  heroDescription String
-  primaryColor    String @default("#2563eb") // Blue-600 default
-  welcomeText     String @default("Bem-vindo à nossa loja")
+  heroTitle       String @default("Transforme seu WhatsApp em uma Máquina de Vendas 24h")
+  heroSubtitle    String @default("Centralize seu time, elimine o risco de bloqueios e nunca mais deixe um cliente no vácuo. Nossa IA usa a API Oficial para triar e responder cada mensagem instantaneamente.")
+  primaryColor    String @default("#10b981")
+  accentColor     String @default("#06b6d4")
+  
+  // Detalhes dos Planos
+  planStarterPrice     Float   @default(197.0)
+  planStarterOldPrice  Float?  
+  planStarterFeatures  String  @default("- Atendimento via API Oficial\n- 5 Atendentes Simultâneos\n- Suporte por Email")
+  planStarterCheckout  String  @default("")
+  
+  planProPrice         Float   @default(397.0)
+  planProOldPrice      Float?  
+  planProFeatures      String  @default("- Tudo do Plano Starter\n- IA Treinada com seus dados\n- Atendentes Ilimitados\n- Suporte VIP via WhatsApp")
+  planProCheckout      String  @default("")
+  
+  whatsappLink     String @default("https://wa.me/5500999999999")
+  logoUrl          String @default("")
+  
+  // Barra de Anúncios (Top Bar)
+  announcementActive   Boolean @default(false)
+  announcementText     String  @default("Oportunidade: 20% de desconto usando o cupom ZAP20")
+  announcementLink     String  @default("")
+  announcementBgColor  String  @default("#10b981")
+
+  // Marketing & Rastreio
+  facebookPixelId      String  @default("")
+  googleAnalyticsId    String  @default("")
+  
+  // Footer
+  socialInstagram  String @default("")
+  supportEmail     String @default("")
+  footerCopyright  String @default("© 2024 ZapScale Tecnologia. Todos os direitos reservados.")
+
+  // Relacionamentos
+  features         Feature[]
+  faqs             FAQItem[]
+}
+
+model Feature {
+  id             String       @id @default(uuid())
+  title          String
+  description    String
+  icon           String       @default("bolt")
+  siteSettings   SiteSettings @relation(fields: [siteSettingsId], references: [id])
+  siteSettingsId Int
+}
+
+model FAQItem {
+  id             String       @id @default(uuid())
+  question       String
+  answer         String
+  siteSettings   SiteSettings @relation(fields: [siteSettingsId], references: [id])
+  siteSettingsId Int
 }
 
 model Product {
@@ -23,7 +73,7 @@ model Product {
   title       String
   description String
   imageUrl    String
-  price       String // Visual price (e.g., "R$ 49,90")
+  price       String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
