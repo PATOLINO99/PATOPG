@@ -91,3 +91,11 @@ model Lead {
   data_criacao     DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
+
+// AUTH: Defesa do Painel
+model Admin {
+  id        String   @id @default(uuid())
+  username  String   @unique @default("admin")
+  password  String   // Hash
+  createdAt DateTime @default(now())
+}
