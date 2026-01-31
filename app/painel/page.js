@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { DollarSign, Users, TrendingUp, Clock, Calendar } from 'lucide-react';
+import { DollarSign, Users, TrendingUp, Clock, Calendar, Settings } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import Link from 'next/link';
 
 const StatusBadge = ({ status }) => {
     const colors = {
@@ -59,9 +60,15 @@ export default function DashboardStats() {
                         </h1>
                         <p className="text-gray-400 font-medium">Análise estratégica de faturamento real</p>
                     </div>
-                    <div className="bg-gray-900 border border-gray-700 px-4 py-2 rounded-lg flex items-center gap-2 text-sm text-gray-300">
-                        <Calendar className="w-4 h-4 text-blue-400" />
-                        Últimos 7 dias
+                    <div className="flex gap-3">
+                        <Link href="/painel/configuracoes" className="bg-gray-800 border border-gray-700 hover:bg-gray-700 hover:border-gray-500 transition-all px-4 py-2 rounded-lg flex items-center gap-2 text-sm text-gray-300 font-medium">
+                            <Settings className="w-4 h-4 text-white" />
+                            Configurar Site
+                        </Link>
+                        <div className="bg-gray-900 border border-gray-700 px-4 py-2 rounded-lg flex items-center gap-2 text-sm text-gray-300">
+                            <Calendar className="w-4 h-4 text-blue-400" />
+                            Últimos 7 dias
+                        </div>
                     </div>
                 </div>
 

@@ -1,3 +1,4 @@
+
 @echo off
 echo --- 1. Gerando Cliente Prisma ---
 call npx prisma generate
@@ -20,3 +21,5 @@ echo.
 echo --- SUCESSO! O Site deve estar corrigido agora. ---
 echo Pressione qualquer tecla para fechar...
 pause
+
+
