@@ -77,3 +77,17 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+// NOVO: Tabela de Leads para o Dashboard
+model Lead {
+  id               String   @id @default(uuid())
+  nome             String
+  email            String?
+  telefone         String?
+  origem           String   @default("WhatsApp")
+  status_pagamento String   @default("Pendente") // Pendente, Aprovado, Cancelado
+  valor_venda      Float    @default(0.0)
+  mensagem         String?  // Última mensagem ou resumo
+  data_criacao     DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
