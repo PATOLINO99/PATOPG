@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { revalidatePath } from 'next/cache';
 
 export async function GET() {
     try {
@@ -90,6 +91,8 @@ export async function PUT(request: Request) {
             where: { id: 1 },
             include: { features: true, faqs: true }
         });
+
+        revalidatePath('/');
 
         return NextResponse.json(final);
     } catch (error) {

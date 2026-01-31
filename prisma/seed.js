@@ -13,7 +13,17 @@ async function main() {
             primaryColor: '#10b981',
             accentColor: '#06b6d4',
             whatsappLink: 'https://wa.me/5500999999999',
-            footerCopyright: '© 2024 ZapScale Tecnologia. Todos os direitos reservados.'
+            footerCopyright: '© 2024 ZapScale Tecnologia. Todos os direitos reservados.',
+
+            // Novos Campos
+            planStarterPrice: 197.00,
+            planStarterFeatures: '- Atendimento via API Oficial\n- 5 Atendentes Simultâneos\n- Suporte por Email',
+            planProPrice: 397.00,
+            planProFeatures: '- Tudo do Plano Starter\n- IA Treinada com seus dados\n- Atendentes Ilimitados\n- Suporte VIP via WhatsApp',
+
+            announcementActive: true,
+            announcementText: 'Oportunidade: 20% de desconto usando o cupom ZAP20',
+            announcementBgColor: '#10b981'
         },
     })
 
