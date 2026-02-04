@@ -1,0 +1,7 @@
+(function() {
+  window._POSTHOG_REMOTE_CONFIG = window._POSTHOG_REMOTE_CONFIG || {};
+  window._POSTHOG_REMOTE_CONFIG['phc_4URIAm1uYfJO7j8kWSe0J8lc8IqnstRLS7Jx8NcakHo'] = {
+    config: {"token": "phc_4URIAm1uYfJO7j8kWSe0J8lc8IqnstRLS7Jx8NcakHo", "supportedCompression": ["gzip", "gzip-js"], "hasFeatureFlags": true, "captureDeadClicks": false, "capturePerformance": false, "autocapture_opt_out": false, "autocaptureExceptions": false, "analytics": {"endpoint": "/i/v0/e/"}, "elementsChainAsString": true, "errorTracking": {"autocaptureExceptions": false, "suppressionRules": []}, "logs": {"captureConsoleLogs": false}, "sessionRecording": {"endpoint": "/s/", "consoleLogRecordingEnabled": true, "recorderVersion": "v2", "sampleRate": null, "minimumDurationMilliseconds": null, "linkedFlag": null, "networkPayloadCapture": null, "masking": {"maskAllInputs": false}, "urlTriggers": [], "urlBlocklist": [], "eventTriggers": ["User submitted builder message", "User sent chat hub message", "User clicked new chat button", "User inserted workflow template", "User opened ready to run AI workflow", "User opened nodes panel"], "triggerMatchType": "any", "scriptConfig": {"script": "posthog-recorder"}, "recordCanvas": false, "canvasFps": null, "canvasQuality": null}, "heatmaps": false, "conversations": false, "surveys": false, "productTours": false, "defaultIdentifiedOnly": true},
+    siteApps: []
+  }
+})();
