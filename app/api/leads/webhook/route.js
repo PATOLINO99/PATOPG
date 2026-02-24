@@ -5,9 +5,20 @@ export async function POST(request) {
     try {
         const body = await request.json();
 
-        // Verifica token de segurança (opcional, pode ser via header ou query)
-        // const auth = request.headers.get('authorization');
-        // if (auth !== 'Bearer zapscale_n8n_secret') return NextResponse.json({error: 'Unauthorized'}, {status: 401});
+        // Verifica token de segurança (MANDATORY)
+        const authHeader = request.headers.get('authorization');
+        const expectedSecret = process.env.N8N_WEBHOOK_SECRET;
+
+        if (!expectedSecret) {
+            console.error('CRITICAL: N8N_WEBHOOK_SECRET not configured on server');
+            return NextResponse.json({ error: 'Server misconfiguration' }, { status: 500 });
+        }
+
+        // Bearer token check
+        if (!authHeader || !authHeader.startsWith('Bearer ') || authHeader.split(' ')[1] !== expectedSecret) {
+            console.warn('Tentativa de acesso não autorizado ao Webhook de Leads');
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
 
         // Validação básica
         if (!body.telefone && !body.email) {

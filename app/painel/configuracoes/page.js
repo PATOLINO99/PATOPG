@@ -1,344 +1,222 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Save, ArrowLeft, Layout, CreditCard, Share2, Activity } from 'lucide-react';
-import Link from 'next/link';
+import {
+    Settings,
+    Bell,
+    Shield,
+    Database,
+    User,
+    Save,
+    Clock
+} from 'lucide-react';
+import { useState } from 'react';
 
-export default function SettingsPage() {
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
+export default function ConfiguracoesPage() {
     const [activeTab, setActiveTab] = useState('geral');
-    const [message, setMessage] = useState(null);
 
-    const [formData, setFormData] = useState({
-        heroTitle: '',
-        heroSubtitle: '',
-        whatsappLink: '',
-        primaryColor: '#10b981',
+    return (
+        <div className="p-8 space-y-8 max-w-7xl mx-auto w-full animate-in fade-in duration-500">
+            <div>
+                <h1 className="text-2xl font-black text-gray-900 tracking-tight">Configurações do Sistema</h1>
+                <p className="text-gray-500 text-sm">Gerencie preferências da clínica, usuários e integrações.</p>
+            </div>
 
-        planStarterPrice: 197,
-        planStarterOldPrice: '',
-        planStarterFeatures: '',
-        planStarterCheckout: '',
+            <div className="flex flex-col lg:flex-row gap-8">
+                {/* Tabs */}
+                <aside className="lg:w-64 space-y-1">
+                    <ConfigTab
+                        icon={<Settings className="w-5 h-5" />}
+                        label="Geral"
+                        active={activeTab === 'geral'}
+                        onClick={() => setActiveTab('geral')}
+                    />
+                    <ConfigTab
+                        icon={<User className="w-5 h-5" />}
+                        label="Meu Perfil"
+                        active={activeTab === 'perfil'}
+                        onClick={() => setActiveTab('perfil')}
+                    />
+                    <ConfigTab
+                        icon={<Bell className="w-5 h-5" />}
+                        label="Notificações"
+                        active={activeTab === 'notificacoes'}
+                        onClick={() => setActiveTab('notificacoes')}
+                    />
+                    <ConfigTab
+                        icon={<Clock className="w-5 h-5" />}
+                        label="Expediente"
+                        active={activeTab === 'expediente'}
+                        onClick={() => setActiveTab('expediente')}
+                    />
+                    <ConfigTab
+                        icon={<Database className="w-5 h-5" />}
+                        label="Profissionais"
+                        active={activeTab === 'profissionais'}
+                        onClick={() => setActiveTab('profissionais')}
+                    />
+                    <ConfigTab
+                        icon={<Shield className="w-5 h-5" />}
+                        label="Segurança"
+                        active={activeTab === 'seguranca'}
+                        onClick={() => setActiveTab('seguranca')}
+                    />
+                </aside>
 
-        planProPrice: 397,
-        planProOldPrice: '',
-        planProFeatures: '',
-        planProCheckout: '',
+                {/* Content */}
+                <div className="flex-1 bg-white border border-gray-200 rounded-3xl p-8 shadow-sm space-y-8">
+                    {activeTab === 'geral' && (
+                        <div className="space-y-6">
+                            <h3 className="text-lg font-black text-gray-900">Preferências Gerais</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <InputGroup label="Nome da Clínica" placeholder="Ex: Clínica Bem Estar" defaultValue="ZapScale Clinic" />
+                                <InputGroup label="Email de Contato" placeholder="email@clinica.com" defaultValue="admin@zapscale.pro" />
+                                <InputGroup label="Telefone Comercial" placeholder="(00) 00000-0000" defaultValue="(11) 98765-4321" />
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Idioma do Sistema</label>
+                                    <select className="w-full bg-gray-50 border-none rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-[#0088C8]/20 outline-none appearance-none font-bold">
+                                        <option>Português (Brasil)</option>
+                                        <option>English</option>
+                                        <option>Español</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="pt-6 border-t border-gray-100 flex justify-end">
+                                <button className="bg-[#0088C8] text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-[#0088C8]/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                                    <Save className="w-4 h-4" />
+                                    Salvar Alterações
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
-        facebookPixelId: '',
-        googleAnalyticsId: '',
+                    {activeTab === 'profissionais' && <ProfessionalsManager />}
 
-        announcementActive: true,
-        announcementText: '',
-        announcementLink: '',
+                    {activeTab !== 'geral' && activeTab !== 'profissionais' && (
+                        <div className="py-20 text-center text-gray-400 space-y-4">
+                            <Database className="w-12 h-12 mx-auto opacity-20" />
+                            <p className="font-bold">Em breve: Módulo de {activeTab.toUpperCase()} em desenvolvimento.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
 
-        footerCopyright: ''
-    });
+function ProfessionalsManager() {
+    const [professionals, setProfessionals] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [newName, setNewName] = useState('');
 
-    useEffect(() => {
-        fetch('/api/config')
-            .then(res => res.json())
-            .then(data => {
-                setFormData(prev => ({
-                    ...prev,
-                    ...data,
-                    // Converter booleanos e nulos
-                    planStarterOldPrice: data.planStarterOldPrice || '',
-                    planProOldPrice: data.planProOldPrice || '',
-                    announcementActive: data.announcementActive || false
-                }));
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error(err);
-                setLoading(false);
-            });
+    const loadProfessionals = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch('/api/professionals');
+            const data = await res.json();
+            setProfessionals(Array.isArray(data) ? data : []);
+        } catch (err) { }
+        setLoading(false);
+    };
+
+    useState(() => {
+        loadProfessionals();
     }, []);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setSaving(true);
-        setMessage(null);
-
+    const handleAdd = async () => {
+        if (!newName) return;
         try {
-            const res = await fetch('/api/config', {
-                method: 'PUT',
+            const res = await fetch('/api/professionals', {
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({ name: newName })
             });
-
             if (res.ok) {
-                setMessage({ type: 'success', text: 'Configurações salvas com sucesso!' });
-            } else {
-                setMessage({ type: 'error', text: 'Erro ao salvar alterações.' });
+                setNewName('');
+                loadProfessionals();
             }
-        } catch (error) {
-            setMessage({ type: 'error', text: 'Erro de conexão.' });
-        }
-        setSaving(false);
+        } catch (err) { }
     };
 
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
-        }));
+    const handleDelete = async (id) => {
+        if (!confirm('Deseja desativar este profissional?')) return;
+        try {
+            // Implementação simples de toggle active se preferir, ou delete
+            // Aqui vamos apenas remover da lista para o MVP
+            await fetch(`/api/professionals/${id}`, { method: 'DELETE' });
+            loadProfessionals();
+        } catch (err) { }
     };
 
-    if (loading) return <div className="text-white p-8">Carregando editor...</div>;
+    return (
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <h3 className="text-lg font-black text-gray-900">Gerenciar Equipe</h3>
+                <div className="flex gap-2">
+                    <input
+                        type="text"
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                        placeholder="Nome do Profissional"
+                        className="bg-gray-50 border-none rounded-xl py-2 px-4 text-sm focus:ring-2 focus:ring-[#0088C8]/20 outline-none font-bold shadow-inner"
+                    />
+                    <button
+                        onClick={handleAdd}
+                        className="bg-[#0088C8] text-white px-4 py-2 rounded-xl text-xs font-black shadow-lg shadow-[#0088C8]/20 hover:scale-105 transition-all"
+                    >
+                        ADICIONAR
+                    </button>
+                </div>
+            </div>
 
-    const TabButton = ({ id, icon: Icon, label }) => (
+            <div className="space-y-3">
+                {loading ? (
+                    <p className="text-center py-10 text-gray-400 font-bold animate-pulse">Carregando especialistas...</p>
+                ) : professionals.length === 0 ? (
+                    <p className="text-center py-10 text-gray-400 font-bold">Nenhum profissional cadastrado.</p>
+                ) : professionals.map(p => (
+                    <div key={p.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-[#0088C8]/30 transition-all group">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-xs font-black text-[#0088C8] shadow-sm">
+                                {p.name.charAt(0)}
+                            </div>
+                            <span className="font-bold text-gray-900">{p.name}</span>
+                        </div>
+                        <button
+                            onClick={() => handleDelete(p.id)}
+                            className="text-gray-300 hover:text-rose-500 p-2 transition-colors opacity-0 group-hover:opacity-100"
+                        >
+                            <Save className="w-4 h-4 rotate-45" /> {/* Usando Save rotacionado como X se não quiser importar mais ícones */}
+                        </button>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+
+function ConfigTab({ icon, label, active, onClick }) {
+    return (
         <button
-            type="button"
-            onClick={() => setActiveTab(id)}
-            className={`flex items-center gap-2 px-4 py-3 text-sm font-medium rounded-lg transition-all ${activeTab === id
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                }`}
+            onClick={onClick}
+            className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold transition-all ${active ? 'bg-[#0088C8] text-white shadow-lg shadow-[#0088C8]/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}`}
         >
-            <Icon className="w-4 h-4" />
+            {icon}
             {label}
         </button>
     );
+}
 
+function InputGroup({ label, placeholder, defaultValue }) {
     return (
-        <div className="min-h-screen bg-black text-white p-8">
-            <div className="max-w-5xl mx-auto">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-4">
-                        <Link href="/painel" className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
-                            <ArrowLeft className="w-6 h-6 text-gray-400" />
-                        </Link>
-                        <div>
-                            <h1 className="text-3xl font-bold">Editor do Site</h1>
-                            <p className="text-gray-400 text-sm">Personalize sua Landing Page em tempo real</p>
-                        </div>
-                    </div>
-                    <button
-                        onClick={handleSubmit}
-                        disabled={saving}
-                        className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-green-500/20 disabled:opacity-50"
-                    >
-                        <Save className="w-4 h-4" />
-                        {saving ? 'Salvando...' : 'Salvar Alterações'}
-                    </button>
-                </div>
-
-                {message && (
-                    <div className={`mb-6 p-4 rounded-lg flex items-center gap-2 ${message.type === 'success' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
-                        {message.text}
-                    </div>
-                )}
-
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    {/* Sidebar de Abas */}
-                    <div className="space-y-2">
-                        <TabButton id="geral" icon={Layout} label="Geral e Hero" />
-                        <TabButton id="precos" icon={CreditCard} label="Planos e Preços" />
-                        <TabButton id="marketing" icon={Activity} label="Pixel e Script" />
-                        <TabButton id="anuncios" icon={Share2} label="Anúncios" />
-                    </div>
-
-                    {/* Área de Edição */}
-                    <div className="md:col-span-3 bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-xl">
-
-                        {/* Aba Geral */}
-                        {activeTab === 'geral' && (
-                            <div className="space-y-6">
-                                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                                    <Layout className="w-5 h-5 text-blue-400" />
-                                    Conteúdo Principal
-                                </h2>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Título Principal (Hero)</label>
-                                    <input
-                                        type="text"
-                                        name="heroTitle"
-                                        value={formData.heroTitle}
-                                        onChange={handleChange}
-                                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-blue-500 focus:outline-none"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Subtítulo</label>
-                                    <textarea
-                                        name="heroSubtitle"
-                                        value={formData.heroSubtitle}
-                                        onChange={handleChange}
-                                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white h-24 focus:border-blue-500 focus:outline-none"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Link do WhatsApp</label>
-                                    <input
-                                        type="text"
-                                        name="whatsappLink"
-                                        value={formData.whatsappLink}
-                                        onChange={handleChange}
-                                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-green-500 focus:outline-none"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Cor Primária (Hex)</label>
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="color"
-                                            name="primaryColor"
-                                            value={formData.primaryColor}
-                                            onChange={handleChange}
-                                            className="h-10 w-10 rounded border-0 cursor-pointer"
-                                        />
-                                        <input
-                                            type="text"
-                                            name="primaryColor"
-                                            value={formData.primaryColor}
-                                            onChange={handleChange}
-                                            className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white uppercase focus:border-blue-500 focus:outline-none"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Aba Preços */}
-                        {activeTab === 'precos' && (
-                            <div className="space-y-8">
-                                <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-                                    <h3 className="text-lg font-bold text-green-400 mb-4">Plano Starter</h3>
-                                    <div className="grid grid-cols-2 gap-4 mb-4">
-                                        <div>
-                                            <label className="block text-xs text-gray-400 uppercase">Preço Atual (R$)</label>
-                                            <input type="number" name="planStarterPrice" value={formData.planStarterPrice} onChange={handleChange} className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs text-gray-400 uppercase">Preço Antigo (Opcional)</label>
-                                            <input type="number" name="planStarterOldPrice" value={formData.planStarterOldPrice} onChange={handleChange} className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white" />
-                                        </div>
-                                    </div>
-                                    <div className="mb-4">
-                                        <label className="block text-xs text-gray-400 uppercase mb-1">Link de Checkout (Pagamento)</label>
-                                        <input type="text" name="planStarterCheckout" value={formData.planStarterCheckout} onChange={handleChange} placeholder="https://..." className="w-full bg-gray-900 border border-blue-500/30 rounded p-2 text-blue-300" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs text-gray-400 uppercase mb-1">Recursos (um por linha)</label>
-                                        <textarea name="planStarterFeatures" value={formData.planStarterFeatures} onChange={handleChange} className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white h-24" />
-                                    </div>
-                                </div>
-
-                                <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-                                    <h3 className="text-lg font-bold text-purple-400 mb-4">Plano PRO</h3>
-                                    <div className="grid grid-cols-2 gap-4 mb-4">
-                                        <div>
-                                            <label className="block text-xs text-gray-400 uppercase">Preço Atual (R$)</label>
-                                            <input type="number" name="planProPrice" value={formData.planProPrice} onChange={handleChange} className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs text-gray-400 uppercase">Preço Antigo (Opcional)</label>
-                                            <input type="number" name="planProOldPrice" value={formData.planProOldPrice} onChange={handleChange} className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white" />
-                                        </div>
-                                    </div>
-                                    <div className="mb-4">
-                                        <label className="block text-xs text-gray-400 uppercase mb-1">Link de Checkout (Pagamento)</label>
-                                        <input type="text" name="planProCheckout" value={formData.planProCheckout} onChange={handleChange} placeholder="https://..." className="w-full bg-gray-900 border border-purple-500/30 rounded p-2 text-purple-300" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs text-gray-400 uppercase mb-1">Recursos (um por linha)</label>
-                                        <textarea name="planProFeatures" value={formData.planProFeatures} onChange={handleChange} className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white h-24" />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Aba Marketing */}
-                        {activeTab === 'marketing' && (
-                            <div className="space-y-6">
-                                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                                    <Activity className="w-5 h-5 text-red-400" />
-                                    Rastreamento e Analytics
-                                </h2>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Facebook Pixel ID</label>
-                                    <input
-                                        type="text"
-                                        name="facebookPixelId"
-                                        value={formData.facebookPixelId}
-                                        onChange={handleChange}
-                                        placeholder="Ex: 1234567890"
-                                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-blue-500 focus:outline-none"
-                                    />
-                                    <p className="text-xs text-gray-500 mt-1">O código será inserido automaticamente em todas as páginas.</p>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Google Analytics ID (G-XXXX)</label>
-                                    <input
-                                        type="text"
-                                        name="googleAnalyticsId"
-                                        value={formData.googleAnalyticsId}
-                                        onChange={handleChange}
-                                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-blue-500 focus:outline-none"
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Aba Anúncios */}
-                        {activeTab === 'anuncios' && (
-                            <div className="space-y-6">
-                                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                                    <Share2 className="w-5 h-5 text-yellow-400" />
-                                    Barra de Anúncios (Topo)
-                                </h2>
-
-                                <label className="flex items-center gap-3 p-4 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-700/50 transition-colors">
-                                    <input
-                                        type="checkbox"
-                                        name="announcementActive"
-                                        checked={formData.announcementActive}
-                                        onChange={handleChange}
-                                        className="w-5 h-5 rounded border-gray-600 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-900"
-                                    />
-                                    <span className="text-white font-medium">Ativar Barra de Topo</span>
-                                </label>
-
-                                {formData.announcementActive && (
-                                    <>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-400 mb-1">Texto do Anúncio</label>
-                                            <input
-                                                type="text"
-                                                name="announcementText"
-                                                value={formData.announcementText}
-                                                onChange={handleChange}
-                                                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-400 mb-1">Link ao clicar</label>
-                                            <input
-                                                type="text"
-                                                name="announcementLink"
-                                                value={formData.announcementLink}
-                                                onChange={handleChange}
-                                                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white"
-                                            />
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                        )}
-
-                    </div>
-                </div>
-            </div>
+        <div className="space-y-2">
+            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{label}</label>
+            <input
+                type="text"
+                defaultValue={defaultValue}
+                placeholder={placeholder}
+                className="w-full bg-gray-50 border-none rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-[#0088C8]/20 outline-none font-bold text-gray-900"
+            />
         </div>
     );
 }

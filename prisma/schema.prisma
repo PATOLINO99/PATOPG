@@ -6,8 +6,78 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  password      String   // Hash bcrypt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relacionamentos
+  patients      Patient[]
+  appointments  Appointment[]
+  leads         Lead[]
+  professionals Professional[]
+}
+
+model Professional {
+  id           String        @id @default(uuid())
+  name         String
+  active       Boolean       @default(true)
+  userId       String
+  user         User          @relation(fields: [userId], references: [id])
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Patient {
+  id           String        @id @default(uuid())
+  name         String
+  phone        String
+  userId       String
+  user         User          @relation(fields: [userId], references: [id])
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Appointment {
+  id                   String       @id @default(uuid())
+  userId               String
+  user                 User         @relation(fields: [userId], references: [id])
+  patientId            String
+  patient              Patient      @relation(fields: [patientId], references: [id])
+  professionalId       String
+  professional         Professional @relation(fields: [professionalId], references: [id])
+  date                 DateTime
+  time                 String
+  service              String       @default("Consulta Geral")
+  status               String       @default("booked") // booked, canceled, done, rescheduled
+  confirmedViaWhatsapp Boolean      @default(false)
+  notes                String?
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+}
+
+model Lead {
+  id               String   @id @default(uuid())
+  user             User?    @relation(fields: [userId], references: [id])
+  userId           String?
+  nome             String
+  email            String?
+  telefone         String?
+  origem           String   @default("WhatsApp")
+  status_pagamento String   @default("Pendente")
+  valor_venda      Float    @default(0.0)
+  mensagem         String?
+  data_criacao     DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 model SiteSettings {
@@ -76,26 +146,4 @@ model Product {
   price       String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-}
-
-// NOVO: Tabela de Leads para o Dashboard
-model Lead {
-  id               String   @id @default(uuid())
-  nome             String
-  email            String?
-  telefone         String?
-  origem           String   @default("WhatsApp")
-  status_pagamento String   @default("Pendente") // Pendente, Aprovado, Cancelado
-  valor_venda      Float    @default(0.0)
-  mensagem         String?  // Última mensagem ou resumo
-  data_criacao     DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-}
-
-// AUTH: Defesa do Painel
-model Admin {
-  id        String   @id @default(uuid())
-  username  String   @unique @default("admin")
-  password  String   // Hash
-  createdAt DateTime @default(now())
 }

@@ -1,26 +1,35 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../../../lib/prisma';
 import bcrypt from 'bcryptjs';
-import { signToken } from '../../../../lib/auth';
+import { signToken, COOKIE_OPTIONS } from '../../../../lib/auth';
 
-const prisma = new PrismaClient();
-
+/**
+ * Rota de Setup Hardened
+ * Impede re-configuração e força políticas de senha forte.
+ */
 export async function POST(req) {
     try {
         const count = await prisma.admin.count();
 
-        // Se já tiver admin, bloqueia (segurança)
+        // Bloqueio Total: Se já existir um admin, qualquer tentativa é negada (Forbidden)
         if (count > 0) {
-            return NextResponse.json({ error: 'Sistema já configurado.' }, { status: 403 });
+            console.error('[SECURITY] Tentativa de re-configurar sistema já ativo!');
+            return NextResponse.json({ error: 'Operação não permitida. O sistema já está configurado.' }, { status: 403 });
         }
 
-        const { password } = await req.json();
+        const body = await req.json();
+        const password = String(body.password || '').trim();
 
-        if (!password || password.length < 4) {
-            return NextResponse.json({ error: 'Senha muito curta.' }, { status: 400 });
+        // Política de Senha Forte: Mínimo 12 caracteres, deve conter números e letras
+        const securePasswordRegex = /^(?=.*[A-Za-z])(?=.*\d).{12,}$/;
+
+        if (!securePasswordRegex.test(password)) {
+            return NextResponse.json({
+                error: 'Senha muito fraca. Mínimo de 12 caracteres, contendo pelo menos 1 letra e 1 número.'
+            }, { status: 400 });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 12); // Aumentado salt rounds para 12
 
         const admin = await prisma.admin.create({
             data: {
@@ -29,22 +38,24 @@ export async function POST(req) {
             }
         });
 
-        const token = await signToken({ id: admin.id, role: 'admin' });
-
-        const response = NextResponse.json({ success: true, message: 'Configurado com sucesso!' });
-
-        response.cookies.set('admin_token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            path: '/',
-            maxAge: 60 * 60 * 24 // 1 dia
+        const token = await signToken({
+            id: admin.id,
+            role: 'admin',
+            jti: crypto.randomUUID()
         });
+
+        const response = NextResponse.json({
+            success: true,
+            message: 'Administrador configurado com sucesso! Bem-vindo.'
+        });
+
+        // Cookies de sessão inicial configurados com segurança máxima
+        response.cookies.set('admin_token', token, COOKIE_OPTIONS);
 
         return response;
 
     } catch (error) {
-        console.error(error);
-        return NextResponse.json({ error: 'Erro ao configurar.' }, { status: 500 });
+        console.error('[SETUP_ERROR]', error.message);
+        return NextResponse.json({ error: 'Erro crítico ao configurar administrador.' }, { status: 500 });
     }
 }
