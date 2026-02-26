@@ -9,7 +9,7 @@ import {
     Save,
     Clock
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ConfiguracoesPage() {
     const [activeTab, setActiveTab] = useState('geral');
@@ -118,7 +118,7 @@ function ProfessionalsManager() {
         setLoading(false);
     };
 
-    useState(() => {
+    useEffect(() => {
         loadProfessionals();
     }, []);
 
