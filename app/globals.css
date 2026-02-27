@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Simples Agenda Design Tokens */
+  --primary: #0088C8;
+  --primary-hover: #0077b0;
+  --background: #FFFFFF;
+  --background-alt: #F8F8F8;
+  --text-dark: #232323;
+  --text-gray: #666666;
+  --border: #E6E6E6;
+  --neutral-bg: #F2F4F7;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+body {
+  color: var(--text-dark);
+  background: var(--background);
+  font-family: 'Inter', sans-serif;
+}
+
+.bg-alt {
+  background-color: var(--background-alt);
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+.bg-primary {
+  background-color: var(--primary);
+}
+
+.border-base {
+  border-color: var(--border);
+}
+
+/* Custom Component Classes */
+.btn-primary {
+  @apply bg-[#0088C8] hover:bg-[#0077b0] text-white font-bold py-3 px-8 rounded-lg transition-all active:scale-95;
+}
+
+.btn-secondary {
+  @apply bg-white border-2 border-[#0088C8] text-[#0088C8] font-bold py-3 px-8 rounded-lg hover:bg-[#F2F4F7] transition-all;
+}
+
+.card-simples {
+  @apply bg-white border border-[#E6E6E6] rounded-xl p-8 shadow-sm hover:shadow-md transition-shadow;
+}
+
+.input-simples {
+  @apply w-full border border-[#E6E6E6] rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#0088C8] transition-all;
+}
+
+.section-padding {
+  @apply py-20 px-4 md:px-8;
+}
