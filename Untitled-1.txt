@@ -1,0 +1,1 @@
+.\FORCAR_INSTALACAO.bat
